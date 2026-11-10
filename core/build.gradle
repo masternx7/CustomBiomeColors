@@ -1,9 +1,10 @@
 plugins {
-    id 'application'
+    id 'java'
+    id 'com.gradleup.shadow' version '9.2.2'
 }
 
 group = 'me.arthed'
-version = '1.2.1'
+version = '1.3.0'
 
 repositories {
     mavenCentral()
@@ -12,22 +13,36 @@ repositories {
         name = 'worldedit-repo'
         url = 'https://maven.enginehub.org/repo/'
     }
+    maven {
+        name = 'spigot-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven {
+        name = 'jitpack-repo'
+        url = 'https://jitpack.io'
+    }
 }
 
 dependencies {
     implementation 'org.jetbrains:annotations:16.0.2'
+    implementation 'com.github.Anon8281:UniversalScheduler:0.1.7'
     implementation project(':utils')
-    implementation project(':1_16')
-    implementation project(':1_17')
-    implementation project(':1_18')
-    implementation project(':1_19')
-    implementation project(':1_20')
-    implementation project(':1_20_2')
-    compileOnly 'org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT'
+    implementation project(':1_26_3')
+    compileOnly 'org.spigotmc:spigot-api:26.3-R0.1-SNAPSHOT'
     compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT'
 }
 
 task prepareKotlinBuildScriptModel {
 
+}
+
+jar {
+    enabled = false
+}
+
+shadowJar {
+    archiveBaseName.set('CustomBiomeColors')
+    archiveClassifier.set('')
+    relocate 'com.github.Anon8281.universalScheduler', 'me.arthed.custombiomecolors.universalScheduler'
 }
 

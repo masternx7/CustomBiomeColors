@@ -1,0 +1,32 @@
+plugins {
+    id 'application'
+}
+
+group = 'me.arthed'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = 'spigot-repo'
+        url = uri('https://hub.spigotmc.org/nexus/content/repositories/snapshots/')
+    }
+    maven {
+        name = 'loohp-repo'
+        url = uri('https://repo.loohpjames.com/repository/')
+    }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot:26.3-R0.1-SNAPSHOT'
+    implementation project(":utils")
+}
+
+task prepareKotlinBuildScriptModel {
+
+}

@@ -37,18 +37,21 @@ public class DataManager {
         try {
             Type typeToken = new TypeToken<Map<String, int[]>>() {}.getType();
             this.map = gson.fromJson(new FileReader(this.file), typeToken);
+            if (this.map == null) {
+                this.map = new HashMap<>();
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    public void save() throws IOException {
+    public synchronized void save() throws IOException {
         final String json = gson.toJson(map);
         this.file.delete();
         Files.write(this.file.toPath(), json.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
     }
 
-    public void saveBiome(BiomeKey biomeKey, BiomeColors biomeColors) {
+    public synchronized void saveBiome(BiomeKey biomeKey, BiomeColors biomeColors) {
         this.map.put(biomeKey.key + ":" + biomeKey.value, new int[] {
                 biomeColors.getGrassColor(),
                 biomeColors.getFoliageColor(),
@@ -60,7 +63,7 @@ public class DataManager {
     }
 
     @Nullable
-    public NmsBiome getBiomeWithSpecificColors(BiomeColors biomeColors) {
+    public synchronized NmsBiome getBiomeWithSpecificColors(BiomeColors biomeColors) {
         for(String biomeKeyString : this.map.keySet()) {
             int[] colors = map.get(biomeKeyString);
             if(colors[0] == biomeColors.getGrassColor() &&
@@ -75,7 +78,7 @@ public class DataManager {
         return null;
     }
 
-    public void loadBiomes() {
+    public synchronized void loadBiomes() {
         for (String biomeKeyString : this.map.keySet()) {
             int[] colors = map.get(biomeKeyString);
             plugin.getNmsServer().loadBiome(

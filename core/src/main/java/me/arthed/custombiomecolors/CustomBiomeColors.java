@@ -1,5 +1,7 @@
 package me.arthed.custombiomecolors;
 
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import me.arthed.custombiomecolors.commands.GetBiomeColorsCommand;
 import me.arthed.custombiomecolors.commands.SetBiomeColorCommand;
 import me.arthed.custombiomecolors.data.DataManager;
@@ -21,6 +23,12 @@ public final class CustomBiomeColors extends JavaPlugin {
     private static CustomBiomeColors instance;
     public static CustomBiomeColors getInstance() {
         return instance;
+    }
+
+    private static TaskScheduler scheduler;
+    @NotNull
+    public static TaskScheduler getScheduler() {
+        return scheduler;
     }
 
     private NmsServer nmsServer;
@@ -49,21 +57,12 @@ public final class CustomBiomeColors extends JavaPlugin {
     public void onLoad() {
         instance = this;
 
-        if(Bukkit.getVersion().contains("1.16")) {
-            this.nmsServer = new NmsServer_1_16();
-        } else if(Bukkit.getVersion().contains("1.17")) {
-            this.nmsServer = new NmsServer_1_17();
-        } else if(Bukkit.getVersion().contains("1.18")) {
-            this.nmsServer = new NmsServer_1_18();
-        } else if(Bukkit.getVersion().contains("1.19")) {
-            this.nmsServer = new NmsServer_1_19();
-        } else if(Bukkit.getVersion().contains("1.20.1")) {
-            this.nmsServer = new NmsServer_1_20();
-        } else if(Bukkit.getVersion().contains("1.20.2")) {
-            this.nmsServer = new NmsServer_1_20_2();
+        if(Bukkit.getBukkitVersion().startsWith("26.3") || Bukkit.getVersion().contains("26.3")) {
+            this.nmsServer = new NmsServer_26_3();
         } else {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l[CustomBiomeColors] This plugin works only on 1.16 and higher versions."));
+            Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l[CustomBiomeColors] This plugin requires Minecraft 26.3."));
             Bukkit.getPluginManager().disablePlugin(this);
+            return;
         }
 
         this.dataManager = new DataManager("data.json");
@@ -73,6 +72,8 @@ public final class CustomBiomeColors extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        scheduler = UniversalScheduler.getScheduler(this);
+
         new BStats(this, 12660);
 
         this.biomeManager = new BiomeManager();
@@ -92,9 +93,16 @@ public final class CustomBiomeColors extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        try {
-            this.dataManager.save();
-        } catch (IOException ignore) {}
+        if (this.dataManager != null) {
+            try {
+                this.dataManager.save();
+            } catch (IOException ignore) {}
+        }
+
+        if (scheduler != null) {
+            scheduler.cancelTasks();
+            scheduler = null;
+        }
     }
 
 }

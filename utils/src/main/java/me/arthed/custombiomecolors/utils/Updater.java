@@ -1,5 +1,7 @@
 package me.arthed.custombiomecolors.utils;
 
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,9 +19,10 @@ import java.net.URLConnection;
 
 public class Updater implements Listener {
 
-    public boolean update;
+    public volatile boolean update;
     private final String currentVersion;
     private final int pluginId;
+    private final TaskScheduler scheduler;
 
     private final String message;
 
@@ -30,6 +33,7 @@ public class Updater implements Listener {
 
         this.currentVersion = plugin.getDescription().getVersion();
         this.pluginId = pluginId;
+        this.scheduler = UniversalScheduler.getScheduler(plugin);
         this.message = ChatColor.translateAlternateColorCodes('&', "&7[CustomBiomeColors] There is an update availabe! Download it from: https://www.spigotmc.org/resources/" + this.pluginId + "/");
 
         this.checkUpdates();
@@ -53,12 +57,14 @@ public class Updater implements Listener {
                     update = Boolean.FALSE;
                 } else {
                     update = Boolean.TRUE;
-                    Bukkit.getConsoleSender().sendMessage(this.message);
-                    for(Player p : Bukkit.getOnlinePlayers()) {
-                        if(p.isOp()) {
-                            p.sendMessage(this.message);
+                    scheduler.runTask(() -> {
+                        Bukkit.getConsoleSender().sendMessage(Updater.this.message);
+                        for(Player p : Bukkit.getOnlinePlayers()) {
+                            if(p.isOp()) {
+                                p.sendMessage(Updater.this.message);
+                            }
                         }
-                    }
+                    });
                 }
             } catch (IOException ignored) {}
         });

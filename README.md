@@ -18,7 +18,13 @@ Requires [WorldEdit](https://dev.bukkit.org/projects/worldedit).
 
 ❗ Due to the way biomes work in minecraft, selections, especially small ones, might not be precise.
 
-❗ Only the exact following versions are supported: 1.16.5, 1.17.1, 1.18.2, 1.19.4, 1.20.1, 1.20.2 
+❗ Requires Minecraft 26.3 (Spigot, Paper or Folia)
+
+❗ Folia is supported (including regionised multithreading). Use a Folia-compatible WorldEdit build.
+
+# Building
+
+Requires JDK 25. Run `./gradlew :core:build`; the plugin jar is written to `core/build/libs/`.
 
 
 # Commands
